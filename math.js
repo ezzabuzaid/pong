@@ -1,0 +1,10 @@
+const divide = (dividend, divisor) => dividend / divisor;
+const subtraction = (minuend, subtrahend) => minuend - subtrahend;
+const multiplication = (multiplier, multiplyby) => multiplier * multiplyby;
+const addition = (addend1, addend2) => addend1 + addend2;
+const even = (number) => number % 2 === 0;
+const gte = (operand1, operand2) => operand1 >= operand2;
+const lte = (operand1, operand2) => operand1 <= operand2;
+const or = (...operands) => operands.some(operand => operand === true);
+const and = (...operands) => operands.every(operand => operand === true);
+const inverse = (number) => -number;
