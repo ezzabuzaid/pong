@@ -1,33 +1,49 @@
-(() => {
 
-    const draw = new Draw();
-    const userPlayer = new Player(0);
-    const oponentPlayer = new Player(subtraction(canvas.width, playerSigementwidth));
-    const ball = new Ball(10, 5);
+/**
+ * 
+ * @param {'svg'|'canvas'} graphics 
+ */
+function play(graphics) {
 
-    function render() {
-        draw.color('white').drawRect(0, 0, canvas.width, canvas.height)
+    let painter = new Painter();
 
-        draw.color('black').drawText(
+    if (graphics === 'svg') {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        document.body.appendChild(svg);
+        painter = new SVGPainter(svg);
+    } else {
+        const canvas = document.createElement('canvas');
+        document.body.appendChild(canvas);
+        painter = new CanvasPainter(canvas);
+    }
+
+    let ball = createBall();
+
+    const userPlayer = new Player();
+    const oponentPlayer = new Player();
+
+    userPlayer.yAxis = subtract(divide(boardHeight, 2), divide(paddleHeight, 2));
+    userPlayer.xAxis = 0;
+    oponentPlayer.yAxis = subtract(divide(boardHeight, 2), divide(paddleHeight, 2));
+    oponentPlayer.xAxis = subtract(boardWidth, paddleWidth);
+
+    function renderGame() {
+        painter.clearPaint();
+        painter.paintBoard();
+        painter.paintBall(ball.radius, ball.xAxis, ball.yAxis);
+        painter.paintPaddle(userPlayer.xAxis, userPlayer.yAxis);
+        painter.paintPaddle(oponentPlayer.xAxis, oponentPlayer.yAxis);
+        painter.paintNet(2, 10);
+        painter.paintText(
             userPlayer.score,
-            subtraction(divide(canvas.width, 4), divide(textFontSize, 2)),
-            canvas.height / 10
+            subtract(divide(boardWidth, 4), divide(textFontSize, 2)),
+            boardHeight / 10
         );
-
-        draw.color('black').drawText(
+        painter.paintText(
             oponentPlayer.score,
-            subtraction(multiplication(divide(canvas.width, 4), 3), divide(textFontSize, 2)),
-            canvas.height / 10
+            subtract(multiply(divide(boardWidth, 4), 3), divide(textFontSize, 2)),
+            boardHeight / 10
         );
-
-        draw.drawNet();
-
-        draw.color('black').drawCircle(ball.xAxis, ball.yAxis, ball.radius);
-
-
-        draw.color('black').drawRect(userPlayer.xAxis, userPlayer.yAxis, playerSigementwidth, playerSigementHeight)
-        draw.color('black').drawRect(oponentPlayer.xAxis, oponentPlayer.yAxis, playerSigementwidth, playerSigementHeight)
-
     }
 
     function collision() {
@@ -41,48 +57,56 @@
     }
 
     function getPlayer() {
-        if (lte(ball.xAxis, divide(canvas.width, 2))) {
+        if (lte(ball.xAxis, divide(boardWidth, 2))) {
             return userPlayer;
         }
         return oponentPlayer;
     }
 
-    document.addEventListener("mousemove", (event) => {
-        const centerOfPlayer = addition(divide(canvas.height, 2), divide(playerSigementHeight, 2));
-        const currentPosition = subtraction(event.clientY, centerOfPlayer);
-        console.log(currentPosition);
-        userPlayer.move(currentPosition);
+    ['mousemove', 'touchmove'].forEach(eventName => {
+        document.addEventListener("mousemove", (event) => {
+            const cursorPosition = event.clientY - paddleHeight - painter.offsetTop;
+            const exceededBottom = event.clientY > painter.offsetBottom
+            const exceededTop = (event.clientY - paddleHeight) < painter.offsetTop
+            userPlayer.move(cursorPosition);
+            if (exceededBottom) {
+                const boardBottom = painter.offsetBottom - painter.offsetTop - paddleHeight;
+                userPlayer.move(boardBottom);
+            }
+            if (exceededTop) {
+                userPlayer.move(0);
+            }
+        });
     });
 
-
-    refresh(() => {
+    animate(60, () => {
+        renderGame();
         const player = getPlayer();
+
         if (collision()) {
-            const collisionPoint = subtraction(ball.top(), player.center());
+            const collisionPoint = subtract(ball.top(), player.center());
             const normalizedPoint = divide( // between -1 and 1
                 collisionPoint,
-                divide(playerSigementHeight, 2)
+                divide(paddleHeight, 2)
             );
-            const direction = lte(ball.right(), divide(canvas.width, 2)) ? 1 : -1;
+            const direction = lte(ball.right(), divide(boardWidth, 2)) ? 1 : -1;
             const angel = (Math.PI / 4) * normalizedPoint;
             ball.xVelocity = Math.cos(angel) * ball.speed * direction;
             ball.yVelocity = Math.sin(angel) * ball.speed;
-            ball.speed += 0.1;
+            ball.speed += ball.speed * 1 / 100;
         }
 
         ball.move();
 
         if (lte(ball.left(), 0)) {
             oponentPlayer.score++;
-            ball.reset();
-        } else if (gte(ball.right(), canvas.width)) {
+            ball = createBall();
+        } else if (gte(ball.right(), boardWidth)) {
             userPlayer.score++;
-            ball.reset();
+            ball = createBall();
         }
 
-        oponentPlayer.yAxis += ((ball.top() - (oponentPlayer.top() + playerSigementHeight / 2))) * 0.1;
+        oponentPlayer.yAxis += ((ball.top() - (oponentPlayer.top() + paddleHeight / 2))) * ball.speed * 1 / 100;
+    });
 
-        render();
-    }, 60)
-
-})()
+}

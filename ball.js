@@ -2,10 +2,10 @@ class Ball {
     constructor(radius, speed) {
         this.radius = radius;
         this.speed = speed;
-        this.xVelocity = 5;
-        this.yVelocity = 5;
-        this.xAxis = divide(canvas.width, 2);
-        this.yAxis = divide(canvas.height, 2);
+        this.xVelocity = speed;
+        this.yVelocity = speed;
+        this.xAxis = 0;
+        this.yAxis = 0;
     }
 
     top() {
@@ -13,27 +13,21 @@ class Ball {
     }
 
     bottom() {
-        return addition(this.yAxis, this.radius);
+        return add(this.yAxis, this.radius);
     }
 
     left() {
-        return subtraction(this.xAxis, this.radius);
+        return subtract(this.xAxis, this.radius);
     }
 
     right() {
-        return addition(this.xAxis, this.radius);
-    }
-
-    reset() {
-        const newBall = new Ball(this.radius, this.speed);
-        newBall.xVelocity = inverse(this.xVelocity);
-        Object.assign(this, newBall);
+        return add(this.xAxis, this.radius);
     }
 
     move() {
         if (
             or(
-                gte(this.bottom(), canvas.height),
+                gte(this.bottom(), boardHeight),
                 lte(this.top(), 0)
             )
         ) {

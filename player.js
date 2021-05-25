@@ -1,18 +1,17 @@
 class Player {
 
-    constructor(xAxis) {
-        this.xAxis = xAxis;
-        this.yAxis = subtraction(divide(canvas.height, 2), divide(playerSigementHeight, 2));
+    constructor() {
+        this.xAxis = 0;
+        this.yAxis = 0;
         this.score = 0;
     }
-
 
     top() {
         return this.yAxis;
     }
 
     bottom() {
-        return addition(this.top(), playerSigementHeight);
+        return add(this.top(), paddleHeight);
     }
 
     left() {
@@ -20,33 +19,15 @@ class Player {
     }
 
     right() {
-        return addition(this.xAxis, playerSigementwidth);
+        return add(this.xAxis, paddleWidth);
     }
 
     center() {
-        return addition(this.top(), divide(playerSigementHeight, 2))
+        return add(this.top(), divide(paddleHeight, 2))
     }
 
-    get goingUp() { }
-
     move(yAxis) {
-        const maxDown = addition(divide(canvas.height, 2), playerSigementHeight);
-        const maxUp = 0;
-        if (lte(yAxis, maxDown)) {
-            this.yAxis = yAxis;
-        } else {
-            this.yAxis = maxDown
-        }
-        if (mouseDirection.bottom) {
-        }
-        // else if (mouseDirection.top) {
-        //     if (lte(yAxis, maxUp)) {
-        //         this.yAxis = maxUp
-        //     } else {
-        //         this.yAxis = yAxis;
-        //     }
-        // }
-
+        this.yAxis = yAxis;
     }
 
 }

@@ -12,6 +12,17 @@
                 align-items: center;
             }
 
+
+            .list-item:hover {
+                fill: green !important;
+                fill: transparent;
+            }
+
+            svg:not(.menu) {
+                cursor: none;
+            }
+
+            svg,
             canvas {
                 border: 2px dotted black;
             }
@@ -20,11 +31,12 @@
     </head>
 
     <body>
-        <canvas></canvas>
-        <script src="./math.js"></script>
-        <script src="./mouse_direction.js"></script>
         <script src="./shared.js"></script>
-        <script src="./draw.js"></script>
+        <script src="./index.js"></script>
+        <script src="./math.js"></script>
+        <script src="./painter.js"></script>
+        <script src="./canvas_painter.js"></script>
+        <script src="./svg_painter.js"></script>
         <script src="./player.js"></script>
         <script src="./ball.js"></script>
         <script src="./pong.js"></script>
