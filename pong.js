@@ -64,7 +64,7 @@ function play(graphics) {
     }
 
     ['mousemove', 'touchmove'].forEach(eventName => {
-        document.addEventListener("mousemove", (event) => {
+        document.addEventListener(eventName, (event) => {
             const cursorPosition = event.clientY - paddleHeight - painter.offsetTop;
             const exceededBottom = event.clientY > painter.offsetBottom
             const exceededTop = (event.clientY - paddleHeight) < painter.offsetTop
